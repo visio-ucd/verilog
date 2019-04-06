@@ -1,15 +1,15 @@
-module bfloat16_mult(clk, a, b, out);
+module bfloat16_mult(clk, a, b, out, out_c, exp, a_e, b_e, neg_shift, man);
   input clk;
   input [15:0] a;
   input [15:0] b;
   output reg [15:0] out;
-  wire [15:0] out_c;
+  output reg [15:0] out_c;
   wire [15:0] man_mult_out;
-  wire [15:0] man;
+  output reg [15:0] man;
   reg [3:0] shift;
-  wire [8:0] neg_shift;
-  wire [8:0] a_e, b_e;
-  wire [8:0] exp;
+  output reg [9:0] neg_shift;
+  output reg [9:0] a_e, b_e;
+  output reg [9:0] exp;
   reg [15:0] a_r, b_r;
 
   //bfloat_man_mult m0(.a({2'b01, a_r[6:0]}), .b({2'b01, b_r[6:0]}), .out(man_mult_out));
@@ -37,14 +37,47 @@ module bfloat16_mult(clk, a, b, out);
     endcase
   end
 
-  assign a_e = {1'b0, a_r[14:7]} + 9'b110000001; // -127
-  assign b_e = {1'b0, b_r[14:7]} + 9'b110000001; // -127
-  assign out_c[15] = a_r[15] ^ b_r[15];
-  assign man = man_mult_out << shift;
-  assign out_c[6:0] = man[14:8];
-  assign neg_shift = ~({5'b00000, shift}) + 1'b1;
-  assign exp = a_e + b_e + 9'b010000000 + neg_shift;
-  assign out_c[14:7] = exp[7:0];
+  // assign a_e = {2'b00, a_r[14:7]} + 10'b1110000001; // -127
+  // assign b_e = {2'b00, b_r[14:7]} + 10'b1110000001; // -127
+  // assign out_c[15] = a_r[15] ^ b_r[15];
+  // assign man = man_mult_out << shift;
+  // assign out_c[6:0] = man[14:8];
+  // assign neg_shift = ~({6'b000000, shift}) + 1'b1;
+  // assign exp = a_e + b_e + 10'b0010000000 + neg_shift;
+  // assign out_c[14:7] = exp[7:0];
+
+always @ (*) begin
+    a_e = {2'b00, a_r[14:7]} + 10'b1110000001; // -127
+    b_e = {2'b00, b_r[14:7]} + 10'b1110000001; // -127
+	out_c[15] =  a_r[15] ^ b_r[15];
+    man = man_mult_out << shift;
+	neg_shift = ~({6'b000000, shift}) + 1'b1;
+    exp = a_e + b_e + 10'b0010000000 + neg_shift;
+	
+	//overflow
+	if (exp[9:8] == 2'b01) 
+	   out_c[14:0] = 15'b1111_1111_0000_000;
+	//underflow
+	else if (exp [9:8] == 2'b11)
+		out_c[14:0] = 15'b0000_0000_0000_000;
+	//result is inf
+	else if (exp[9:0] == 10'b00_1111_1111)
+		out_c[14:0] = 15'b1111_1111_0000_000;
+	//normal
+	else
+		out_c[14:0] = {exp[7:0], man[14:8]};	
+	//zero 
+	if (a_r[14:0] == 15'd0 || b_r[14:0] == 15'd0)
+		out_c[14:0] = 15'd0;
+	//input is inf or NaN
+	if(a_r[14:7] == 8'b1111_1111 || b_r[14:7]  == 8'b1111_1111) begin
+    if(a_r[6:0] == 7'b0000_000 || b_r[6:0] == 7'b0000_000)
+		  out_c[14:0] = 15'b1111_1111_0000_000;
+    else begin
+      out_c[14:0] = 15'b1111_1111_0000_001;
+    end
+  end
+end
 
   always @(posedge clk) begin
     a_r <= a;
