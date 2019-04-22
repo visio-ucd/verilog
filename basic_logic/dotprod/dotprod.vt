@@ -1,0 +1,31 @@
+module tb_dot_prod;
+
+reg [31:0] horz;
+reg [31:0] vert;
+reg clk;
+wire [31:0] out;
+
+defparam UUT.vec_length = 2;
+dotprod UUT (
+	.clk(clk),
+	.horz(horz),
+	.vert(vert),
+	.mult_out_r(out)
+	);
+	
+initial begin
+	clk = 0;
+	
+	horz =  32'b0_1000_0000_0100_011____0_1000_0000_0000_000;
+	vert =  32'b1_1000_0010_1110_110____0_1000_0000_1000_000;
+	
+	#100
+	
+	$finish;
+end
+
+always begin
+	clk = ~clk;
+	#10;
+end
+endmodule
