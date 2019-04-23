@@ -3,14 +3,19 @@ module bfloat16_mult(clk, a, b, out, out_c, exp, a_e, b_e, neg_shift, man);
   input [15:0] a;
   input [15:0] b;
   output reg [15:0] out;
-  output reg [15:0] out_c;
+  reg [15:0] out_c;
   wire [15:0] man_mult_out;
-  output reg [15:0] man;
+  reg [15:0] man;
   reg [3:0] shift;
-  output reg [9:0] neg_shift;
-  output reg [9:0] a_e, b_e;
-  output reg [9:0] exp;
+  reg [9:0] neg_shift;
+  reg [9:0] a_e, b_e;
+  reg [9:0] exp;
   reg [15:0] a_r, b_r;
+
+  //PARAMETER DECLARATIONS
+  parameter NAN = 15'b1111_1111_0000_001;
+  parameter INF = 15'b1111_1111_0000_000;
+  parameter ZERO = 15'b0000_0000_0000_000;
 
   //bfloat_man_mult m0(.a({2'b01, a_r[6:0]}), .b({2'b01, b_r[6:0]}), .out(man_mult_out));
   assign man_mult_out = {2'b01, a_r[6:0]} * {2'b01, b_r[6:0]};
@@ -66,16 +71,28 @@ always @ (*) begin
 	//normal
 	else
 		out_c[14:0] = {exp[7:0], man[14:8]};	
+
 	//zero 
-	if (a_r[14:0] == 15'd0 || b_r[14:0] == 15'd0)
-		out_c[14:0] = 15'd0;
-	//input is inf or NaN
-	if(a_r[14:7] == 8'b1111_1111 || b_r[14:7]  == 8'b1111_1111) begin
-    if(a_r[6:0] == 7'b0000_000 || b_r[6:0] == 7'b0000_000)
-		  out_c[14:0] = 15'b1111_1111_0000_000;
-    else begin
-      out_c[14:0] = 15'b1111_1111_0000_001;
+	if (a_r[14:0] == ZERO || b_r[14:0] == ZERO) begin
+		out_c[14:0] = ZERO;
+  end
+
+	//input is inf 
+	if(a_r[14:0] == INF || b_r[14:0]  == INF) begin
+    if(a_r[14:0] == ZERO || b_r[14:0] == ZERO) begin
+      //inf * zero = NaN
+      out_c[14:0] = NAN;
     end
+    else begin
+      //inf * normal = inf
+      out_c[14:0] = INF;
+    end
+  end
+
+  //NaN
+  if (a_r[14:7] == 8'b1111_1111 && a_r[6:0] != 7'b0000_000 ||
+      b_r[14:7] == 8'b1111_1111 && b_r[6:0] != 7'b0000_000) begin
+    out_c[14:0] = NAN;
   end
 end
 
