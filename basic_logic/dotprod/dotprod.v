@@ -9,7 +9,7 @@ I/O
 ===========================================================
 */
 
-//CAUTION: this should be 2^x + 1 for x be natural number
+//CAUTION: this should be 2^x for x be natural number
 parameter vec_length = 10;
 parameter bit_length = vec_length * 16;
 
@@ -63,7 +63,7 @@ adder_tree_regs
       \
        \
 			( + ) ------> adder_output_wires
-		   /
+		 /
       /
  -   /
 | | /
@@ -83,14 +83,15 @@ wire [0 : 2 * (vec_length - 1) * 16 - 1] adder_tree_wires;
 wire [0 :     (vec_length - 1) * 16 - 1] adder_output_wires;
 
 // connect wires to adder
+genvar j;
 generate
 
-	for (i=0; i < vec_length - 1; i=i+1) begin : ADDLayer
+	for (j=0; j < vec_length - 1; j=j+1) begin : ADDLayer
 		bfloat16_adder bfloat16_adder_inst(
 			.clk(clk),
-			.a(adder_tree_wires[i*32 : i*32 + 15]),
-			.b(adder_tree_wires[i*32 + 16 : i*32 + 31]),
-			.out(adder_output_wires[i*16 : (i+1) * 16 - 1])
+			.a(adder_tree_wires[j*32 : j*32 + 15]),
+			.b(adder_tree_wires[j*32 + 16 : j*32 + 31]),
+			.out(adder_output_wires[j*16 : (j+1) * 16 - 1])
 		);
 	end
 
@@ -109,17 +110,27 @@ assign vert_1 = vert_r;
 // attach adder_tree_reg to adder
 assign adder_tree_wires = adder_tree_regs;
 
+// attach output adder_tree_wires to next layer adder_tree_regs
+genvar k;
+generate
+	for (k=0; k< vec_length - 2; k=k+1) begin : TreeConnection
+		always @(posedge clk) begin
+				adder_tree_regs[bit_length + k*16 :  bit_length + (k+1) * 16 - 1] <= adder_output_wires[k*16 : (k+1) * 16 - 1];
+		end
+	end
+endgenerate
+
 always @(posedge clk) begin
 
-// transfer input to mult registers
-horz_r <= horz;
-vert_r <= vert;
+	// transfer input to mult registers
+	horz_r <= horz;
+	vert_r <= vert;
 
-// attach first layer of adder tree register to mult output
-adder_tree_regs[0:bit_length - 1] <= mult_out;
+	// attach first layer of adder tree register to mult output
+	adder_tree_regs[0:bit_length - 1] <= mult_out;
 
-//TODO attach output adder_tree_wires to next layer adder_tree_regs
-//...
+	// attach adder tree output to module output
+	out <= adder_output_wires[ (vec_length - 2) * 16 : (vec_length - 1) * 16 - 1];
 
 end
 

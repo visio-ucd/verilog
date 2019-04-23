@@ -1,26 +1,28 @@
-module tb_dot_prod;
+module tb_dotprod_comb;
 
 reg [31:0] horz;
 reg [31:0] vert;
 reg clk;
-wire [31:0] out;
+wire [15:0] out;
 
 defparam UUT.vec_length = 2;
-dotprod UUT (
+
+dotprod_comb UUT (
 	.clk(clk),
 	.horz(horz),
 	.vert(vert),
-	.mult_out_r(out)
+	.out(out)
 	);
-	
+
 initial begin
 	clk = 0;
-	
+	//horz = [2.546875 2.0]
 	horz =  32'b0_1000_0000_0100_011____0_1000_0000_0000_000;
+	//vert = [-15.375  3.0]
 	vert =  32'b1_1000_0010_1110_110____0_1000_0000_1000_000;
-	
-	#100
-	
+	// result should be 1_1000_0100_0000_100 = -33
+	#1000
+
 	$finish;
 end
 
