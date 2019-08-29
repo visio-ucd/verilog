@@ -1,0 +1,13 @@
+18:38:52 **** Incremental Build of configuration Debug for project sd_to_ram ****
+make all 
+Building file: ../src/main.cc
+Invoking: MicroBlaze g++ compiler
+mb-g++ -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/main.o" -I../../sd_to_ram_bsp/microblaze_0/include -mlittle-endian -mcpu=v11.0 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cc"
+../src/main.cc:5:10: fatal error: PmodSD.h: No such file or directory
+ #include "PmodSD.h"
+          ^~~~~~~~~~
+compilation terminated.
+make: *** [src/subdir.mk:23: src/main.o] Error 1
+
+18:38:55 Build Finished (took 2s.961ms)
+

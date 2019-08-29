@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;sdcard_rw/src/utility/fs_ff.c&apos;" deleteContents="false" description="Delete resource &apos;sdcard_rw/src/utility/fs_ff.c&apos;" element1="/sdcard_rw/src/utility/fs_ff.c" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1566008150612"/>&#x0A;<refactoring comment="Delete 2 resources" deleteContents="true" description="Delete 2 resources" element1="/sdcard_rw" element2="/sdcard_rw_bsp" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="2" stamp="1566018890131"/>
+</session>

@@ -1,0 +1,21 @@
+23:09:37 **** Auto Build of configuration Debug for project sd_read_write ****
+make all 
+Building file: ../src/main.cc
+Invoking: MicroBlaze g++ compiler
+mb-g++ -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/main.o" -I../../sd_read_write_bsp/microblaze_0/include -mlittle-endian -mcpu=v11.0 -mxl-soft-mul -Wl,--no-relax -ffunction-sections -fdata-sections -MMD -MP -MF"src/main.d" -MT"src/main.o" -o "src/main.o" "../src/main.cc"
+Finished building: ../src/main.cc
+ 
+Building target: sd_read_write.elf
+Invoking: MicroBlaze g++ linker
+mb-g++ -Wl,-T -Wl,../src/lscript.ld -L../../sd_read_write_bsp/microblaze_0/lib -mlittle-endian -mcpu=v11.0 -mxl-soft-mul -Wl,--no-relax -Wl,--gc-sections -o "sd_read_write.elf"  ./src/main.o   -Wl,--start-group,-lxil,-lgcc,-lc,-lstdc++,--end-group
+Finished building target: sd_read_write.elf
+ 
+Invoking: MicroBlaze Print Size
+mb-size sd_read_write.elf  |tee "sd_read_write.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+ 182724	   1528	   3324	 187576	  2dcb8	sd_read_write.elf
+Finished building: sd_read_write.elf.size
+ 
+
+23:09:38 Build Finished (took 1s.347ms)
+

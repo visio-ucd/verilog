@@ -1,0 +1,93 @@
+/*
+ * PModSD Demo
+ *
+ * Application copies contents from a file in the SDcard to ARTY board's SDRAM.
+ *
+ * Instructions:
+ *      - Make sure the PModSD module is connected to JA connector on the board
+ *      - Compile the demo
+ *      - Connect the board to the pc
+ *      - Program FPGA (Xilinx -> Program FPGA)
+ *      - Run (Run -> Run As -> Launch of Hardware)
+ *
+ * Modified 8/28/2019
+ *   by Ben Li
+ */
+#include "PmodSD.h"
+#include "xparameter.h"
+#include "xil_cache.h"
+#include "xil_printf.h"
+
+//Function Declarations
+void Initialize();
+void Run();
+//End Function Declarations
+
+int main()
+{
+	Xil_ICacheEnable();
+	Xil_DCacheEnable();
+
+	Initialize();
+	Run();
+	return 0;
+}
+
+void Initialize(){
+
+}
+
+void Run(){
+	DXSPISDVOL disk(XPAR_PMODSD_0_AXI_LITE_SPI_BASEADDR,
+	         XPAR_PMODSD_0_AXI_LITE_SDCS_BASEADDR);
+	DFILE infile;
+
+	// The drive to mount the SD volume to.
+    // Options are: "0:", "1:", "2:", "3:", "4:"
+    static const char szDriveNbr[] = "0:";
+
+    FRESULT fr;												//file result, holds return value for filesystem functions.
+    u32 bytesRead, totalBytesRead;							//Counters to keep track of read bytes from the file.
+    u32 fsize;												//total size of the file
+
+
+    u8 *RAM_addr = (u8*)XPAR_MIG_7SERIES_0_BASEADDR;		//SDRAM_addr's base address
+
+    //Mount the disk
+    DFATFS::fsmount(disk, szDriveNbr, 1);
+
+
+    fr = infile.fsopen("newfile.txt", FA_READ);				//open file called "newfile.txt" from the SDCARD for read only
+    if(fr == FR_OK){
+    	fsize = infile.fssize();
+    	u8 buff[fsize];
+    	u8 *buffptr = buff;
+
+    	//
+    	//read data into buffer one byte at a time
+    	//
+    	do {
+    		fr = infile.fsread(buffptr, 1, &bytesRead);
+    		buffptr++;
+    		totalBytesRead += bytesRead;
+    	} while (totalBytesRead < fsize && fr == FR_OK);
+
+    	// fr = infile.fsread(&buff, fsize, &bytesRead);
+    	// totalBytesRead += bytesRead;
+
+    	if(fr == FR_OK) {									//If the entire file is read successfully
+    		buff[totalBytesRead] = 0;						//Set last byte to NULL
+    		memcpy(RAM_addr, buff, fsize);					//Copy to SDRAM_addr
+    	}
+    	else{
+    		//Failed to read the file
+    	}
+    }
+    else{
+    	// Failed to open file to read
+    }
+
+    while(1);
+}
+
+

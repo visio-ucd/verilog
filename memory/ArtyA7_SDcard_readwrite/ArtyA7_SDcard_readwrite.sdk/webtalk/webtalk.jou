@@ -1,0 +1,12 @@
+#-----------------------------------------------------------
+# Webtalk v2018.3 (64-bit)
+# SW Build 2405991 on Thu Dec  6 23:38:27 MST 2018
+# 
+# Start of session at: Wed Aug 28 23:10:53 2019
+# Process ID: 10440
+# Current directory: E:/Users/Docs/2.Vivado_projects/ArtyA7_SDcard_readwrite/ArtyA7_SDcard_readwrite.sdk/webtalk
+# Command line: wbtcv.exe -mode batch -source sdk_webtalk.tcl
+# Log file: E:/Users/Docs/2.Vivado_projects/ArtyA7_SDcard_readwrite/ArtyA7_SDcard_readwrite.sdk/webtalk/webtalk.log
+# Journal file: E:/Users/Docs/2.Vivado_projects/ArtyA7_SDcard_readwrite/ArtyA7_SDcard_readwrite.sdk/webtalk\webtalk.jou
+#-----------------------------------------------------------
+source sdk_webtalk.tcl

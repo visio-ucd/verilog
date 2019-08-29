@@ -1,0 +1,25 @@
+{
+   "ExpandedHierarchyInLayout":"",
+   "guistr":"# # String gsaved with Nlview 6.8.11  2018-08-07 bk=1.4403 VDI=40 GEI=35 GUI=JA:9.0 non-TLS
+#  -string -flagsOSRD
+preplace port LMB_Clk -pg 1 -y 70 -defaultsOSRD
+preplace port ILMB -pg 1 -y 220 -defaultsOSRD
+preplace port DLMB -pg 1 -y 50 -defaultsOSRD
+preplace port SYS_Rst -pg 1 -y 90 -defaultsOSRD
+preplace inst ilmb_bram_if_cntlr -pg 1 -lvl 2 -y 260 -defaultsOSRD
+preplace inst dlmb_bram_if_cntlr -pg 1 -lvl 2 -y 90 -defaultsOSRD
+preplace inst lmb_bram -pg 1 -lvl 3 -y 100 -defaultsOSRD
+preplace inst ilmb_v10 -pg 1 -lvl 1 -y 240 -defaultsOSRD
+preplace inst dlmb_v10 -pg 1 -lvl 1 -y 70 -defaultsOSRD
+preplace netloc microblaze_0_dlmb 1 0 1 NJ
+preplace netloc SYS_Rst_1 1 0 2 20 150 260
+preplace netloc microblaze_0_ilmb_bus 1 1 1 N
+preplace netloc microblaze_0_Clk 1 0 2 30 160 250
+preplace netloc microblaze_0_dlmb_cntlr 1 2 1 N
+preplace netloc microblaze_0_ilmb 1 0 1 NJ
+preplace netloc microblaze_0_dlmb_bus 1 1 1 N
+preplace netloc microblaze_0_ilmb_cntlr 1 2 1 500
+levelinfo -pg 1 0 140 380 630 770 -top -10 -bot 340
+"
+}
+
